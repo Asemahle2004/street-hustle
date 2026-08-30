@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#171a1d">
+  <title>Street Hustle — Day One</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "playcanvas": "https://cdn.jsdelivr.net/npm/playcanvas@2.21.4/build/playcanvas.mjs"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="application" aria-label="Street Hustle 3D game"></canvas>
+
+  <header id="hud">
+    <div class="brand">STREET HUSTLE</div>
+    <div class="status-row">
+      <span id="day">DAY 1</span>
+      <span id="cash">CASH: R0</span>
+      <span id="rep">REP: 0</span>
+    </div>
+    <div id="objective">OBJECTIVE: Find a way to earn R30</div>
+  </header>
+
+  <div id="interaction" role="status" aria-live="polite"></div>
+
+  <div id="desktop-help">WASD / Arrow keys to move · E to interact</div>
+
+  <div id="touch-controls" aria-label="Mobile controls">
+    <div class="dpad">
+      <button type="button" data-key="w" class="up" aria-label="Move forward">▲</button>
+      <button type="button" data-key="a" class="left" aria-label="Move left">◀</button>
+      <button type="button" data-key="s" class="down" aria-label="Move backward">▼</button>
+      <button type="button" data-key="d" class="right" aria-label="Move right">▶</button>
+    </div>
+    <button type="button" id="interact-button" aria-label="Interact">E</button>
+  </div>
+
+  <div id="loading">Building neighbourhood…</div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
