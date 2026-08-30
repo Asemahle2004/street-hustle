@@ -14,30 +14,37 @@ Goals:
 
 Goal: prove that moving around and living inside the world is enjoyable before expanding the city.
 
-Current / first tasks:
+Completed foundation:
 - small 3D neighbourhood
 - third-person player movement
-- third-person camera
+- orbit/follow camera
 - mobile touch controls
-- start with R0
+- walk/run controls
+- animated prototype human character
 - player home
-- one main road
-- houses and corner shop
+- main road, houses and corner shop
+- South African neighbourhood detail pass
 - building collision
-- first earning opportunity
-- money and reputation HUD
+- money, reputation, heat and inventory HUD
+
+Completed Day 1 gameplay loop:
+- Ma starts the family story objective
+- interactive NPCs and dialogue system
+- car-wash work: R30 / +1 reputation
+- shop crate work: R20 / +1 reputation
+- parcel delivery: R35 / +2 reputation
+- risky fictional quick-cash option: R60 / -1 reputation / +2 heat
+- corner-shop bread purchase for R25
+- return bread home to complete Day 1
+- browser autosave for cash, reputation, heat, inventory, jobs, story flags and player position
 
 Next for v0.1:
-- replace block character with animated human model
-- better camera controls
-- character idle/walk/run animation
-- 3 NPCs
-- dialogue system
-- 3 legitimate earning opportunities
-- one risky fictional opportunity
-- first shop purchase
-- save/load
+- replace temporary prototype NPC bodies with higher-quality characters
+- improve player animation/orientation reliability
+- add sound and basic ambient audio
+- improve collision around fences and street props
 - improve mobile performance
+- polish Day 1 pacing and feedback
 
 ## v0.2 — Daily Life
 
@@ -47,7 +54,7 @@ Next for v0.1:
 - NPC schedules
 - friendship/trust system
 - clothing and character customization
-- basic inventory
+- expanded inventory
 - day/night cycle
 - food/needs only if they improve gameplay
 
@@ -57,7 +64,7 @@ Next for v0.1:
 - vehicle ownership
 - taxi/public-transport systems
 - traffic prototypes
-- police/heat system
+- expand police/heat system
 - arrest consequences
 - housing progression
 - relationships
