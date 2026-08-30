@@ -4,59 +4,60 @@
 
 > ZERO → HERO → ZERO → HERO
 
-## Current technology
+## Technology
 
 - **3D engine:** PlayCanvas Engine
 - **Language:** JavaScript
 - **Development:** Browser + GitHub + ChatGPT
-- **Hosting target:** GitHub Pages
-- **Current PlayCanvas version:** 2.21.4 via pinned CDN import
+- **Hosting:** GitHub Pages
+- **PlayCanvas:** pinned CDN import
 - **No local game-engine installation required**
 
-## Current prototype
+## Playable alpha
 
-The repository now contains the first playable browser prototype:
+The repo now contains a complete **systems alpha** rather than only a Day 1 test. The city/content is intentionally small, but the major game loops are coded so they can be tested together.
 
-- a small 3D neighbourhood
-- roads and sidewalks
-- simple placeholder houses and shop
-- a third-person placeholder character
-- keyboard movement
-- mobile touch controls
-- third-person follow camera
-- basic building collision
-- Day 1 HUD
-- starting cash of R0
-- reputation stat
-- first car-wash earning opportunity for R30
+Implemented:
 
-The current graphics are intentionally simple procedural shapes. The purpose is to prove the gameplay systems before adding high-quality character models, animation, vehicles, interiors and larger city districts.
+- 3D South African-flavoured neighbourhood prototype
+- animated third-person player prototype
+- walking, running, orbit camera and collision
+- keyboard and mobile controls
+- day/night lighting and in-game clock
+- multi-day progression
+- NPC conversations and relationships/trust
+- legitimate and risky earning opportunities
+- cash, bank, reputation, heat, energy, wellbeing and family stats
+- shop and inventory
+- parcel-delivery flow
+- stable-work unlock
+- in-game phone with jobs, money, business, garage, bag, people and profile screens
+- banking (deposit/withdraw)
+- three business tiers with daily income/expenses
+- first purchasable and drivable prototype vehicle
+- heat consequences
+- autosave/load in browser storage
+- multiple-character framework/unlocks
+- first full **Zero → Hero → Zero → Hero** progression arc
 
-## Controls
+## Current controls
 
 ### Desktop
-- `WASD` or arrow keys — move
-- `E` — interact
+- `WASD` / arrow keys — move or drive
+- `Shift` — run
+- mouse drag — rotate camera
+- mouse wheel — zoom
+- `E` — interact / enter or exit vehicle
+- `P` — open phone
+- `Esc` — exit vehicle
 
 ### Mobile
-Use the on-screen direction pad and interaction button.
+Use the on-screen movement, RUN, PHONE and E buttons. Drag the 3D view to rotate the camera.
 
-## Long-term direction
+## Important alpha limitation
 
-Street Hustle is intended to grow toward a large 3D open-world life simulation with:
+This is **not the finished GTA-scale game**. It is the full current gameplay architecture in a small prototype world. Final-quality characters, animations, traffic, interiors, large city districts, advanced AI, voice acting, cinematics, many missions and production-quality art still require later development and assets.
 
-- multiple male and female protagonists
-- jobs, businesses and entrepreneurship
-- relationships and family
-- vehicles and transport
-- NPC routines
-- police/heat and legal consequences
-- prison/release story arcs
-- character aging
-- different paths to wealth
-- major rise/fall/rebuild cycles
-- a fictional South African city
+The purpose of this alpha is to let the whole game design be tested now, then fix and expand systems without rebuilding the foundation.
 
-The project aims for **GTA-style freedom and world interaction**, while developing incrementally from a small playable neighbourhood.
-
-See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the staged development plan.
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the long-term plan.
