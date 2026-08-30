@@ -1,37 +1,62 @@
-# Street Hustle: Zero to Hero
+# Street Hustle
 
-A full 3D mobile life-simulation/adventure game built with GDevelop.
+**Street Hustle** is a browser-first 3D life-simulation/adventure game about starting with almost nothing, chasing wealth and status, facing consequences, losing what you built, and rebuilding again.
 
-## Core idea
+> ZERO → HERO → ZERO → HERO
 
-Start with almost nothing. Hustle, work, make choices, build relationships, chase wealth, rise, fall, and rebuild.
+## Current technology
 
-**ZERO → HERO → ZERO → HERO**
+- **3D engine:** PlayCanvas Engine
+- **Language:** JavaScript
+- **Development:** Browser + GitHub + ChatGPT
+- **Hosting target:** GitHub Pages
+- **Current PlayCanvas version:** 2.21.4 via pinned CDN import
+- **No local game-engine installation required**
 
-The goal is not simply to become rich. The game explores whether the player can build wealth without destroying family, relationships, reputation, wellbeing, or freedom.
+## Current prototype
 
-## Development direction
+The repository now contains the first playable browser prototype:
 
-- Engine: GDevelop Web
-- Game style: Full 3D
-- Target platform: Android/mobile first
-- Storage strategy: Cloud-first to avoid large local installations
-- Repository: GitHub for documentation, milestones, backups, and version history
+- a small 3D neighbourhood
+- roads and sidewalks
+- simple placeholder houses and shop
+- a third-person placeholder character
+- keyboard movement
+- mobile touch controls
+- third-person follow camera
+- basic building collision
+- Day 1 HUD
+- starting cash of R0
+- reputation stat
+- first car-wash earning opportunity for R30
 
-## First playable milestone — v0.1
+The current graphics are intentionally simple procedural shapes. The purpose is to prove the gameplay systems before adding high-quality character models, animation, vehicles, interiors and larger city districts.
 
-- One small 3D neighbourhood
-- One playable 3D character
-- Third-person movement
-- Starting cash: R0
-- Player home
-- Street and several buildings
-- At least 3 ways to earn money
-- NPC interaction
-- First mission
-- Basic reputation/choice consequences
-- Save progress
+## Controls
 
-## Design rule
+### Desktop
+- `WASD` or arrow keys — move
+- `E` — interact
 
-Crime may exist as fictional story content, but it is not the only path. Work, business, sport, technology, entertainment, and other routes can all lead to success, failure, and rebuilding.
+### Mobile
+Use the on-screen direction pad and interaction button.
+
+## Long-term direction
+
+Street Hustle is intended to grow toward a large 3D open-world life simulation with:
+
+- multiple male and female protagonists
+- jobs, businesses and entrepreneurship
+- relationships and family
+- vehicles and transport
+- NPC routines
+- police/heat and legal consequences
+- prison/release story arcs
+- character aging
+- different paths to wealth
+- major rise/fall/rebuild cycles
+- a fictional South African city
+
+The project aims for **GTA-style freedom and world interaction**, while developing incrementally from a small playable neighbourhood.
+
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for the staged development plan.
