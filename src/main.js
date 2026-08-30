@@ -12,11 +12,15 @@ const objectiveEl = document.getElementById('objective');
 const interactionEl = document.getElementById('interaction');
 const loadingEl = document.getElementById('loading');
 const interactButton = document.getElementById('interact-button');
+const runButton = document.getElementById('run-button');
 
 let cash = 0;
 let reputation = 0;
 let carWashDone = false;
 let interactRequested = false;
+let runRequested = false;
+let characterAnimReady = false;
+let lastAnimSpeed = -1;
 
 const keys = new Set();
 const virtualKeys = new Set();
@@ -127,15 +131,143 @@ for (const [x, z] of [[-25, 28], [24, 28], [-26, 10], [25, 4], [-26, -12], [27, 
   createTree(x, z);
 }
 
-// Player: simple 3D placeholder assembled from primitives.
+// Player root controls position, collision and facing direction.
 const player = new pc.Entity('Player');
 player.setPosition(0, 0, 25);
 app.root.addChild(player);
 
-createPrimitive('Body', 'box', new pc.Vec3(0, 1.45, 0), new pc.Vec3(0.9, 1.7, 0.55), materials.player, player);
-createPrimitive('Head', 'sphere', new pc.Vec3(0, 2.65, 0), new pc.Vec3(0.72, 0.72, 0.72), materials.skin, player);
-createPrimitive('LegL', 'box', new pc.Vec3(-0.25, 0.45, 0), new pc.Vec3(0.28, 0.9, 0.32), materials.player, player);
-createPrimitive('LegR', 'box', new pc.Vec3(0.25, 0.45, 0), new pc.Vec3(0.28, 0.9, 0.32), materials.player, player);
+// Visuals live under a separate child so imported model orientation can be corrected
+// without changing the player's movement direction.
+const playerVisual = new pc.Entity('PlayerVisual');
+player.addChild(playerVisual);
+
+// Lightweight fallback is shown while the real prototype humanoid is loading.
+const fallbackVisual = new pc.Entity('FallbackVisual');
+playerVisual.addChild(fallbackVisual);
+createPrimitive('Body', 'box', new pc.Vec3(0, 1.45, 0), new pc.Vec3(0.9, 1.7, 0.55), materials.player, fallbackVisual);
+createPrimitive('Head', 'sphere', new pc.Vec3(0, 2.65, 0), new pc.Vec3(0.72, 0.72, 0.72), materials.skin, fallbackVisual);
+createPrimitive('LegL', 'box', new pc.Vec3(-0.25, 0.45, 0), new pc.Vec3(0.28, 0.9, 0.32), materials.player, fallbackVisual);
+createPrimitive('LegR', 'box', new pc.Vec3(0.25, 0.45, 0), new pc.Vec3(0.28, 0.9, 0.32), materials.player, fallbackVisual);
+
+function findAnimationTrack(animations, wantedName) {
+  const target = wantedName.toLowerCase();
+
+  for (const animationAsset of animations) {
+    const track = animationAsset.resource ?? animationAsset;
+    const names = [animationAsset.name, track?.name]
+      .filter(Boolean)
+      .map((name) => String(name).toLowerCase());
+
+    if (names.some((name) => name === target || name.endsWith(`/${target}`) || name.includes(target))) {
+      return track;
+    }
+  }
+
+  return null;
+}
+
+function configureCharacterAnimation(containerAsset) {
+  const animations = containerAsset.resource.animations ?? [];
+  const idleTrack = findAnimationTrack(animations, 'Idle');
+  const walkTrack = findAnimationTrack(animations, 'Walk');
+  const runTrack = findAnimationTrack(animations, 'Run');
+
+  if (!idleTrack || !walkTrack || !runTrack) {
+    console.warn('Street Hustle: humanoid loaded, but Idle/Walk/Run tracks were not all found.');
+    return;
+  }
+
+  playerVisual.addComponent('anim', { activate: true });
+
+  const stateGraph = {
+    layers: [
+      {
+        name: 'locomotion',
+        states: [
+          { name: 'START' },
+          { name: 'Idle', speed: 1 },
+          { name: 'Walk', speed: 1 },
+          { name: 'Run', speed: 1 },
+          { name: 'END' }
+        ],
+        transitions: [
+          { from: 'START', to: 'Idle', time: 0, priority: 0 },
+          {
+            from: 'Idle',
+            to: 'Walk',
+            time: 0.16,
+            priority: 0,
+            conditions: [{ parameterName: 'movement', predicate: pc.ANIM_GREATER_THAN, value: 0 }]
+          },
+          {
+            from: 'Walk',
+            to: 'Idle',
+            time: 0.18,
+            priority: 0,
+            conditions: [{ parameterName: 'movement', predicate: pc.ANIM_LESS_THAN_EQUAL_TO, value: 0 }]
+          },
+          {
+            from: 'Walk',
+            to: 'Run',
+            time: 0.15,
+            priority: 0,
+            conditions: [{ parameterName: 'movement', predicate: pc.ANIM_GREATER_THAN, value: 1 }]
+          },
+          {
+            from: 'Run',
+            to: 'Walk',
+            time: 0.15,
+            priority: 0,
+            conditions: [{ parameterName: 'movement', predicate: pc.ANIM_LESS_THAN, value: 2 }]
+          }
+        ]
+      }
+    ],
+    parameters: {
+      movement: {
+        name: 'movement',
+        type: pc.ANIM_PARAMETER_INTEGER,
+        value: 0
+      }
+    }
+  };
+
+  playerVisual.anim.loadStateGraph(stateGraph);
+  const locomotion = playerVisual.anim.baseLayer;
+  locomotion.assignAnimation('Idle', idleTrack);
+  locomotion.assignAnimation('Walk', walkTrack);
+  locomotion.assignAnimation('Run', runTrack);
+  playerVisual.anim.setInteger('movement', 0);
+  characterAnimReady = true;
+  lastAnimSpeed = 0;
+}
+
+// Temporary prototype humanoid. It is streamed by the browser, so there is no PC installation.
+// It will later be replaced by Street Hustle's own character art.
+const PROTOTYPE_CHARACTER_URL = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb';
+
+app.assets.loadFromUrlAndFilename(PROTOTYPE_CHARACTER_URL, 'Soldier.glb', 'container', (error, asset) => {
+  if (error || !asset?.resource) {
+    console.warn('Street Hustle: prototype humanoid could not load. Keeping fallback character.', error);
+    return;
+  }
+
+  try {
+    const humanoid = asset.resource.instantiateRenderEntity({ castShadows: false });
+    humanoid.name = 'PrototypeHumanoid';
+    humanoid.setLocalPosition(0, 0, 0);
+    humanoid.setLocalScale(1.25, 1.25, 1.25);
+    // Three.js sample faces the opposite way to our movement convention.
+    humanoid.setLocalEulerAngles(0, 180, 0);
+    playerVisual.addChild(humanoid);
+
+    fallbackVisual.enabled = false;
+    configureCharacterAnimation(asset);
+  } catch (loadError) {
+    console.warn('Street Hustle: humanoid setup failed. Keeping fallback character.', loadError);
+    fallbackVisual.enabled = true;
+  }
+});
 
 // Lighting
 app.scene.ambientLight = new pc.Color(0.48, 0.48, 0.48);
@@ -188,7 +320,10 @@ window.addEventListener('keyup', (event) => {
   keys.delete(event.key.toLowerCase());
 });
 
-window.addEventListener('blur', () => keys.clear());
+window.addEventListener('blur', () => {
+  keys.clear();
+  runRequested = false;
+});
 
 for (const button of document.querySelectorAll('[data-key]')) {
   const key = button.dataset.key;
@@ -214,6 +349,24 @@ interactButton.addEventListener('pointerdown', (event) => {
   event.stopPropagation();
   requestInteraction();
 });
+
+if (runButton) {
+  const startRun = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    runRequested = true;
+  };
+  const stopRun = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    runRequested = false;
+  };
+
+  runButton.addEventListener('pointerdown', startRun);
+  runButton.addEventListener('pointerup', stopRun);
+  runButton.addEventListener('pointercancel', stopRun);
+  runButton.addEventListener('pointerleave', stopRun);
+}
 
 // Drag directly on the 3D view to rotate the camera.
 canvas.addEventListener('pointerdown', (event) => {
@@ -276,6 +429,12 @@ function distanceXZ(a, x, z) {
   return Math.sqrt(dx * dx + dz * dz);
 }
 
+function setCharacterAnimationSpeed(speedState) {
+  if (!characterAnimReady || !playerVisual.anim || lastAnimSpeed === speedState) return;
+  playerVisual.anim.setInteger('movement', speedState);
+  lastAnimSpeed = speedState;
+}
+
 app.on('update', (dt) => {
   const pos = player.getPosition();
 
@@ -288,6 +447,8 @@ app.on('update', (dt) => {
   if (inputHeld('a') || inputHeld('arrowleft')) strafeInput -= 1;
 
   const inputMagnitude = Math.hypot(forwardInput, strafeInput);
+  const wantsToRun = inputHeld('shift') || runRequested;
+
   if (inputMagnitude > 0) {
     forwardInput /= inputMagnitude;
     strafeInput /= inputMagnitude;
@@ -303,7 +464,7 @@ app.on('update', (dt) => {
     const moveX = forwardX * forwardInput + rightX * strafeInput;
     const moveZ = forwardZ * forwardInput + rightZ * strafeInput;
 
-    const speed = 7.5;
+    const speed = wantsToRun ? 11.5 : 6.2;
     const nextX = clamp(pos.x + moveX * speed * dt, -38, 38);
     const nextZ = clamp(pos.z + moveZ * speed * dt, -38, 38);
 
@@ -314,6 +475,9 @@ app.on('update', (dt) => {
 
     const playerYaw = Math.atan2(moveX, -moveZ) * 180 / Math.PI;
     player.setEulerAngles(0, playerYaw, 0);
+    setCharacterAnimationSpeed(wantsToRun ? 2 : 1);
+  } else {
+    setCharacterAnimationSpeed(0);
   }
 
   // Orbit camera around the player using yaw, pitch and zoom distance.
