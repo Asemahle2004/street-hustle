@@ -19,7 +19,7 @@ body {
   position: absolute;
   top: 14px;
   left: 14px;
-  max-width: min(520px, calc(100% - 28px));
+  max-width: min(720px, calc(100% - 28px));
   color: white;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
   pointer-events: none;
@@ -33,18 +33,46 @@ body {
 
 .status-row {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
   margin-top: 4px;
   font-weight: 700;
+}
+
+#heat {
+  color: #ffd06a;
+}
+
+#bag {
+  color: #dceeff;
 }
 
 #objective {
   margin-top: 8px;
   padding: 8px 10px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.58);
   font-size: 14px;
+}
+
+#save-status {
+  position: absolute;
+  left: 16px;
+  top: 150px;
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: rgba(24, 95, 52, 0.82);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+#save-status.visible {
+  opacity: 1;
 }
 
 #interaction {
@@ -57,7 +85,7 @@ body {
   padding: 10px 14px;
   border-radius: 9px;
   color: white;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.72);
   text-align: center;
   font-weight: 700;
   opacity: 0;
@@ -67,6 +95,57 @@ body {
 
 #interaction.visible {
   opacity: 1;
+}
+
+#dialogue {
+  position: absolute;
+  left: 50%;
+  bottom: 105px;
+  transform: translate(-50%, 18px);
+  width: min(620px, calc(100% - 36px));
+  padding: 18px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 14px;
+  background: rgba(13, 16, 20, 0.94);
+  color: white;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  z-index: 8;
+}
+
+#dialogue.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+#dialogue-speaker {
+  margin-bottom: 7px;
+  font-size: 17px;
+  font-weight: 900;
+  color: #ffc64a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#dialogue-text {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+#dialogue-close {
+  display: block;
+  margin: 14px 0 0 auto;
+  padding: 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9px;
+  background: #d28a18;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 #desktop-help {
@@ -171,8 +250,16 @@ body {
     display: none;
   }
 
+  #save-status {
+    top: 164px;
+  }
+
   #interaction {
     bottom: 185px;
+  }
+
+  #dialogue {
+    bottom: 175px;
   }
 
   #touch-controls {
