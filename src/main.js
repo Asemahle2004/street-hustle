@@ -150,15 +150,22 @@ sun.addComponent('light', {
 sun.setEulerAngles(48, 32, 0);
 app.root.addChild(sun);
 
-// Third-person camera
+// Third-person orbit camera.
 const camera = new pc.Entity('Camera');
 camera.addComponent('camera', {
   clearColor: new pc.Color(0.46, 0.68, 0.88),
   farClip: 180,
   fov: 60
 });
-camera.setPosition(0, 8, 36);
 app.root.addChild(camera);
+
+let cameraYaw = 0;
+let cameraPitch = 24;
+let cameraDistance = 11;
+let cameraDragging = false;
+let cameraPointerId = null;
+let lastPointerX = 0;
+let lastPointerY = 0;
 
 const desiredCamera = new pc.Vec3();
 const lookTarget = new pc.Vec3();
@@ -187,10 +194,12 @@ for (const button of document.querySelectorAll('[data-key]')) {
   const key = button.dataset.key;
   const press = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     virtualKeys.add(key);
   };
   const release = (event) => {
     event.preventDefault();
+    event.stopPropagation();
     virtualKeys.delete(key);
   };
 
@@ -202,8 +211,50 @@ for (const button of document.querySelectorAll('[data-key]')) {
 
 interactButton.addEventListener('pointerdown', (event) => {
   event.preventDefault();
+  event.stopPropagation();
   requestInteraction();
 });
+
+// Drag directly on the 3D view to rotate the camera.
+canvas.addEventListener('pointerdown', (event) => {
+  if (event.pointerType === 'mouse' && event.button !== 0 && event.button !== 2) return;
+
+  cameraDragging = true;
+  cameraPointerId = event.pointerId;
+  lastPointerX = event.clientX;
+  lastPointerY = event.clientY;
+  canvas.setPointerCapture?.(event.pointerId);
+  event.preventDefault();
+});
+
+canvas.addEventListener('pointermove', (event) => {
+  if (!cameraDragging || event.pointerId !== cameraPointerId) return;
+
+  const dx = event.clientX - lastPointerX;
+  const dy = event.clientY - lastPointerY;
+  lastPointerX = event.clientX;
+  lastPointerY = event.clientY;
+
+  cameraYaw -= dx * 0.28;
+  cameraPitch = clamp(cameraPitch + dy * 0.22, 10, 55);
+  event.preventDefault();
+});
+
+function stopCameraDrag(event) {
+  if (event.pointerId !== cameraPointerId) return;
+  cameraDragging = false;
+  cameraPointerId = null;
+  canvas.releasePointerCapture?.(event.pointerId);
+}
+
+canvas.addEventListener('pointerup', stopCameraDrag);
+canvas.addEventListener('pointercancel', stopCameraDrag);
+canvas.addEventListener('contextmenu', (event) => event.preventDefault());
+
+canvas.addEventListener('wheel', (event) => {
+  cameraDistance = clamp(cameraDistance + event.deltaY * 0.01, 6.5, 17);
+  event.preventDefault();
+}, { passive: false });
 
 function updateHud() {
   cashEl.textContent = `CASH: R${cash}`;
@@ -227,18 +278,30 @@ function distanceXZ(a, x, z) {
 
 app.on('update', (dt) => {
   const pos = player.getPosition();
-  let moveX = 0;
-  let moveZ = 0;
 
-  if (inputHeld('w') || inputHeld('arrowup')) moveZ -= 1;
-  if (inputHeld('s') || inputHeld('arrowdown')) moveZ += 1;
-  if (inputHeld('a') || inputHeld('arrowleft')) moveX -= 1;
-  if (inputHeld('d') || inputHeld('arrowright')) moveX += 1;
+  let forwardInput = 0;
+  let strafeInput = 0;
 
-  const magnitude = Math.hypot(moveX, moveZ);
-  if (magnitude > 0) {
-    moveX /= magnitude;
-    moveZ /= magnitude;
+  if (inputHeld('w') || inputHeld('arrowup')) forwardInput += 1;
+  if (inputHeld('s') || inputHeld('arrowdown')) forwardInput -= 1;
+  if (inputHeld('d') || inputHeld('arrowright')) strafeInput += 1;
+  if (inputHeld('a') || inputHeld('arrowleft')) strafeInput -= 1;
+
+  const inputMagnitude = Math.hypot(forwardInput, strafeInput);
+  if (inputMagnitude > 0) {
+    forwardInput /= inputMagnitude;
+    strafeInput /= inputMagnitude;
+
+    const yawRad = cameraYaw * Math.PI / 180;
+
+    // Movement is relative to the direction the camera is facing.
+    const forwardX = -Math.sin(yawRad);
+    const forwardZ = -Math.cos(yawRad);
+    const rightX = Math.cos(yawRad);
+    const rightZ = -Math.sin(yawRad);
+
+    const moveX = forwardX * forwardInput + rightX * strafeInput;
+    const moveZ = forwardZ * forwardInput + rightZ * strafeInput;
 
     const speed = 7.5;
     const nextX = clamp(pos.x + moveX * speed * dt, -38, 38);
@@ -249,19 +312,29 @@ app.on('update', (dt) => {
 
     player.setPosition(pos);
 
-    const yaw = Math.atan2(moveX, -moveZ) * 180 / Math.PI;
-    player.setEulerAngles(0, yaw, 0);
+    const playerYaw = Math.atan2(moveX, -moveZ) * 180 / Math.PI;
+    player.setEulerAngles(0, playerYaw, 0);
   }
 
-  desiredCamera.set(pos.x, 7.5, pos.z + 11);
+  // Orbit camera around the player using yaw, pitch and zoom distance.
+  const yawRad = cameraYaw * Math.PI / 180;
+  const pitchRad = cameraPitch * Math.PI / 180;
+  const horizontalDistance = Math.cos(pitchRad) * cameraDistance;
+  const verticalDistance = Math.sin(pitchRad) * cameraDistance;
+
+  lookTarget.set(pos.x, 1.65, pos.z);
+  desiredCamera.set(
+    pos.x + Math.sin(yawRad) * horizontalDistance,
+    lookTarget.y + verticalDistance,
+    pos.z + Math.cos(yawRad) * horizontalDistance
+  );
+
   const camPos = camera.getPosition();
   const smooth = 1 - Math.pow(0.002, dt);
   camPos.x += (desiredCamera.x - camPos.x) * smooth;
   camPos.y += (desiredCamera.y - camPos.y) * smooth;
   camPos.z += (desiredCamera.z - camPos.z) * smooth;
   camera.setPosition(camPos);
-
-  lookTarget.set(pos.x, 1.7, pos.z);
   camera.lookAt(lookTarget);
 
   const nearCarWash = distanceXZ(pos, -16, -25) < 4.3;
