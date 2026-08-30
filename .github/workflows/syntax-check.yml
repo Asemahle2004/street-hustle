@@ -1,0 +1,21 @@
+name: JavaScript Syntax Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript modules
+        run: |
+          set -e
+          for file in src/*.js; do
+            name=$(basename "$file" .js)
+            cp "$file" "/tmp/${name}.mjs"
+            node --check "/tmp/${name}.mjs"
+          done
