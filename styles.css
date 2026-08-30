@@ -100,18 +100,30 @@ body {
   pointer-events: auto;
 }
 
+.action-buttons {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: auto;
+}
+
 .dpad button,
+#run-button,
 #interact-button {
   border: 1px solid rgba(255, 255, 255, 0.35);
   background: rgba(0, 0, 0, 0.48);
   color: white;
-  font-size: 22px;
   font-weight: 800;
   user-select: none;
   -webkit-user-select: none;
 }
 
+.dpad button {
+  font-size: 22px;
+}
+
 .dpad button:active,
+#run-button:active,
 #interact-button:active {
   background: rgba(255, 255, 255, 0.32);
 }
@@ -121,10 +133,19 @@ body {
 .dpad .down { grid-column: 2; grid-row: 2; }
 .dpad .right { grid-column: 3; grid-row: 2; border-radius: 4px 10px 10px 4px; }
 
+#run-button {
+  width: 76px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 14px;
+  pointer-events: auto;
+}
+
 #interact-button {
   width: 68px;
   height: 68px;
   border-radius: 50%;
+  font-size: 22px;
   pointer-events: auto;
 }
 
@@ -152,5 +173,13 @@ body {
 
   #interaction {
     bottom: 185px;
+  }
+
+  #touch-controls {
+    padding: 0 12px;
+  }
+
+  .action-buttons {
+    gap: 8px;
   }
 }
