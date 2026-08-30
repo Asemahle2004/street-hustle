@@ -29,7 +29,7 @@
 
   <div id="interaction" role="status" aria-live="polite"></div>
 
-  <div id="desktop-help">WASD / Arrows move · Drag to look · Wheel zoom · E interact</div>
+  <div id="desktop-help">WASD / Arrows move · Hold Shift to run · Drag to look · Wheel zoom · E interact</div>
 
   <div id="touch-controls" aria-label="Mobile controls">
     <div class="dpad">
@@ -38,7 +38,10 @@
       <button type="button" data-key="s" class="down" aria-label="Move backward">▼</button>
       <button type="button" data-key="d" class="right" aria-label="Move right">▶</button>
     </div>
-    <button type="button" id="interact-button" aria-label="Interact">E</button>
+    <div class="action-buttons">
+      <button type="button" id="run-button" aria-label="Run">RUN</button>
+      <button type="button" id="interact-button" aria-label="Interact">E</button>
+    </div>
   </div>
 
   <div id="loading">Building neighbourhood…</div>
