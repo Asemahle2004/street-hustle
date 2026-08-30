@@ -1,9 +1,9 @@
 import * as pc from 'playcanvas';
 
-// Imported 3D character files can use very different unit scales.
-// This small normalizer waits for the prototype character to appear,
-// measures its rendered world-space height, then scales it to a sensible
-// Street Hustle human height and places its feet on the ground.
+// Imported 3D character files can use very different coordinate systems,
+// orientations and unit scales. This helper waits for the prototype character,
+// automatically finds the orientation that makes it stand upright, scales it
+// to a sensible human height, then places its feet on the ground.
 
 const TARGET_HEIGHT = 2.75;
 const MAX_WAIT_MS = 15000;
@@ -11,6 +11,10 @@ const CHECK_EVERY_MS = 120;
 
 function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+async function settleFrames(count = 2) {
+  for (let i = 0; i < count; i += 1) await nextFrame();
 }
 
 function getWorldBounds(entity) {
@@ -42,7 +46,60 @@ function getWorldBounds(entity) {
   }
 
   if (!found) return null;
-  return { minX, minY, minZ, maxX, maxY, maxZ };
+
+  return {
+    minX,
+    minY,
+    minZ,
+    maxX,
+    maxY,
+    maxZ,
+    width: maxX - minX,
+    height: maxY - minY,
+    depth: maxZ - minZ
+  };
+}
+
+async function chooseUprightOrientation(humanoid) {
+  // Keep the character's intended 180 degree facing direction while trying
+  // the common X/Z axis corrections used by imported glTF/FBX rigs.
+  const candidates = [
+    { x: 0, y: 180, z: 0 },
+    { x: 90, y: 180, z: 0 },
+    { x: -90, y: 180, z: 0 },
+    { x: 0, y: 180, z: 90 },
+    { x: 0, y: 180, z: -90 },
+    { x: 180, y: 180, z: 0 }
+  ];
+
+  let best = null;
+
+  for (const rotation of candidates) {
+    humanoid.setLocalEulerAngles(rotation.x, rotation.y, rotation.z);
+    await settleFrames(2);
+
+    const bounds = getWorldBounds(humanoid);
+    if (!bounds) continue;
+
+    // A standing human should be clearly taller vertically than horizontally.
+    const horizontal = Math.max(bounds.width, bounds.depth, 0.001);
+    const score = bounds.height / horizontal;
+
+    if (!best || score > best.score) {
+      best = { rotation, score, bounds };
+    }
+  }
+
+  if (!best) return null;
+
+  humanoid.setLocalEulerAngles(best.rotation.x, best.rotation.y, best.rotation.z);
+  await settleFrames(2);
+
+  console.info(
+    `Street Hustle: selected upright character rotation X=${best.rotation.x}, Y=${best.rotation.y}, Z=${best.rotation.z}.`
+  );
+
+  return getWorldBounds(humanoid);
 }
 
 async function normalizeCharacter() {
@@ -57,31 +114,30 @@ async function normalizeCharacter() {
       continue;
     }
 
-    // Give PlayCanvas a couple of render frames to calculate mesh AABBs.
-    await nextFrame();
-    await nextFrame();
+    // Let PlayCanvas calculate initial mesh AABBs and animation transforms.
+    await settleFrames(3);
 
-    const before = getWorldBounds(humanoid);
-    if (!before) {
+    const uprightBounds = await chooseUprightOrientation(humanoid);
+    if (!uprightBounds) {
       await new Promise((resolve) => setTimeout(resolve, CHECK_EVERY_MS));
       continue;
     }
 
-    const currentHeight = before.maxY - before.minY;
+    const currentHeight = uprightBounds.height;
     if (!Number.isFinite(currentHeight) || currentHeight <= 0.001) return;
 
     const correction = TARGET_HEIGHT / currentHeight;
     const currentScale = humanoid.getLocalScale();
+
     humanoid.setLocalScale(
       currentScale.x * correction,
       currentScale.y * correction,
       currentScale.z * correction
     );
 
-    // Wait for the bounds to update after scaling, then lift/lower the model
-    // so that its lowest rendered point sits on y = 0.
-    await nextFrame();
-    await nextFrame();
+    // Wait for scaled bounds, then move the visual so its lowest rendered
+    // point is on y = 0. This affects visuals only, not player movement.
+    await settleFrames(3);
 
     const after = getWorldBounds(humanoid);
     if (after) {
@@ -90,7 +146,7 @@ async function normalizeCharacter() {
     }
 
     console.info(
-      `Street Hustle: normalized prototype character from ${currentHeight.toFixed(2)} to about ${TARGET_HEIGHT} world units.`
+      `Street Hustle: normalized prototype character to about ${TARGET_HEIGHT} world units tall and placed feet on the ground.`
     );
     return;
   }
