@@ -23,11 +23,20 @@
       <span id="day">DAY 1</span>
       <span id="cash">CASH: R0</span>
       <span id="rep">REP: 0</span>
+      <span id="heat">HEAT: 0</span>
+      <span id="bag">BAG: Empty</span>
     </div>
-    <div id="objective">OBJECTIVE: Find a way to earn R30</div>
+    <div id="objective">OBJECTIVE: Talk to Ma at home</div>
   </header>
 
+  <div id="save-status" aria-live="polite">AUTOSAVED</div>
   <div id="interaction" role="status" aria-live="polite"></div>
+
+  <section id="dialogue" aria-live="polite" aria-label="Conversation">
+    <div id="dialogue-speaker">NPC</div>
+    <div id="dialogue-text"></div>
+    <button type="button" id="dialogue-close">Continue</button>
+  </section>
 
   <div id="desktop-help">WASD / Arrows move · Hold Shift to run · Drag to look · Wheel zoom · E interact</div>
 
@@ -49,5 +58,6 @@
   <script type="module" src="src/main.js"></script>
   <script type="module" src="src/character-normalizer.js"></script>
   <script type="module" src="src/neighborhood-details.js"></script>
+  <script type="module" src="src/day1-story.js"></script>
 </body>
 </html>
