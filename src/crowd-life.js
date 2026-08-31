@@ -17,6 +17,8 @@ else{
   const assets=new Map();
   const people=[];
   const nextFrame=()=>new Promise(r=>requestAnimationFrame(r));
+  const mobileLike=!(window.matchMedia?.('(pointer:fine)')?.matches ?? true);
+  const CULL_DISTANCE=mobileLike?31:46;
 
   function load(id){
     if(assets.has(id))return assets.get(id);
@@ -87,9 +89,10 @@ else{
   }
 
   app.on('update',dt=>{
-    const h=hour();const inside=Boolean(window.StreetHustleLivingWorld?.currentInterior);
+    const h=hour();const inside=Boolean(window.StreetHustleLivingWorld?.currentInterior);const controlled=world.getControlledPosition();
     for(const p of people){
-      p.root.enabled=!inside&&activeForTime(p.name,h);if(!p.root.enabled)continue;
+      const rp=p.root.getPosition();const near=Math.hypot(controlled.x-rp.x,controlled.z-rp.z)<=CULL_DISTANCE;
+      p.root.enabled=!inside&&near&&activeForTime(p.name,h);if(!p.root.enabled)continue;
       if(p.waitCountdown>0){p.waitCountdown-=dt;setMoving(p,false);continue;}
       const target=p.route[p.index];const pos=p.root.getPosition();const dx=target[0]-pos.x,dz=target[1]-pos.z,d=Math.hypot(dx,dz);
       if(d<.28){p.index=(p.index+1)%p.route.length;const [minWait,maxWait]=p.waitRange;p.waitCountdown=minWait+Math.random()*(maxWait-minWait);setMoving(p,false);continue;}
@@ -98,6 +101,6 @@ else{
     }
   });
 
-  window.StreetHustleCrowdLife={people,routines};
+  window.StreetHustleCrowdLife={people,routines,cullDistance:CULL_DISTANCE};
   console.info('Street Hustle: crowd-life layer loaded.');
 }
