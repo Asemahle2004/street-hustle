@@ -1,0 +1,12 @@
+Street Hustle Alpha 0.11
+
+• Android/Play Store packaging added
+• Offline-packaged game engine and current character models
+• 3D life-simulation systems, jobs, businesses and story progression
+• Animated pedestrians and traffic
+• Driving, taxis, weather, day/night and interiors
+• Police, health, hospital and prison consequences
+• Local save system
+• Performance and realism fixes
+
+This is an evolving alpha release for testing and feedback.
