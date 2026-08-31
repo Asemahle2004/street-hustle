@@ -6,7 +6,7 @@ const world = window.StreetHustleWorld;
 if (world?.app) {
   const buildBadge = document.createElement('div');
   buildBadge.id = 'build-badge';
-  buildBadge.textContent = 'ALPHA 0.9 · FULL SCOPE BUILD';
+  buildBadge.textContent = 'ALPHA 0.10 · REALISM BUILD';
   document.body.appendChild(buildBadge);
 
   const errorBanner = document.createElement('div');
