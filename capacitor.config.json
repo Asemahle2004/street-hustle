@@ -1,0 +1,15 @@
+{
+  "appId": "com.asemahle2004.streethustle",
+  "appName": "Street Hustle",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "backgroundColor": "#111418",
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}
