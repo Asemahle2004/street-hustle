@@ -6,8 +6,8 @@ import sharp from 'sharp';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ANDROID = join(ROOT, 'android');
 const APP_ID = 'com.asemahle2004.streethustle';
-const VERSION_NAME = process.env.VERSION_NAME || '0.10.0';
-const VERSION_CODE = Number(process.env.VERSION_CODE || '10');
+const VERSION_NAME = process.env.VERSION_NAME || '0.11.0';
+const VERSION_CODE = Number(process.env.VERSION_CODE || '11');
 
 async function exists(path) {
   try { await access(path); return true; } catch { return false; }
@@ -107,12 +107,23 @@ public class MainActivity extends BridgeActivity {
 }
 
 async function patchColors() {
-  const path = join(ANDROID, 'app', 'src', 'main', 'res', 'values', 'colors.xml');
+  const valuesDir = join(ANDROID, 'app', 'src', 'main', 'res', 'values');
+  const path = join(valuesDir, 'colors.xml');
+  await mkdir(valuesDir, { recursive: true });
+
+  if (!(await exists(path))) {
+    await writeFile(
+      path,
+      '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#172A39</color>\n</resources>\n'
+    );
+    return;
+  }
+
   let text = await readFile(path, 'utf8');
   if (!text.includes('ic_launcher_background')) {
     text = text.replace('</resources>', '    <color name="ic_launcher_background">#172A39</color>\n</resources>');
+    await writeFile(path, text);
   }
-  await writeFile(path, text);
 }
 
 async function generateLauncherIcons() {
