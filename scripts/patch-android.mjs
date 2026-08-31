@@ -108,21 +108,34 @@ public class MainActivity extends BridgeActivity {
 
 async function patchColors() {
   const valuesDir = join(ANDROID, 'app', 'src', 'main', 'res', 'values');
-  const path = join(valuesDir, 'colors.xml');
+  const capacitorBackground = join(valuesDir, 'ic_launcher_background.xml');
+  const legacyColors = join(valuesDir, 'colors.xml');
   await mkdir(valuesDir, { recursive: true });
 
-  if (!(await exists(path))) {
-    await writeFile(
-      path,
-      '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#172A39</color>\n</resources>\n'
-    );
+  // Capacitor 8 normally creates ic_launcher_background.xml already. Keep one
+  // canonical resource definition instead of creating the same color twice.
+  const canonical = '<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#172A39</color>\n</resources>\n';
+
+  if (await exists(capacitorBackground)) {
+    await writeFile(capacitorBackground, canonical);
+
+    // Older versions of this patcher could add the same resource to colors.xml.
+    // Strip only that entry while preserving any unrelated colors Capacitor may add.
+    if (await exists(legacyColors)) {
+      let text = await readFile(legacyColors, 'utf8');
+      text = text.replace(/\s*<color\s+name=["']ic_launcher_background["'][^>]*>[^<]*<\/color>\s*/g, '\n');
+      await writeFile(legacyColors, text);
+    }
     return;
   }
 
-  let text = await readFile(path, 'utf8');
-  if (!text.includes('ic_launcher_background')) {
-    text = text.replace('</resources>', '    <color name="ic_launcher_background">#172A39</color>\n</resources>');
-    await writeFile(path, text);
+  // Fallback for a future Capacitor template that no longer creates the file.
+  await writeFile(capacitorBackground, canonical);
+
+  if (await exists(legacyColors)) {
+    let text = await readFile(legacyColors, 'utf8');
+    text = text.replace(/\s*<color\s+name=["']ic_launcher_background["'][^>]*>[^<]*<\/color>\s*/g, '\n');
+    await writeFile(legacyColors, text);
   }
 }
 
