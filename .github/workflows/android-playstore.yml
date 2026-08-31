@@ -66,6 +66,9 @@ jobs:
       - name: Build offline mobile web bundle
         run: npm run mobile:prepare
 
+      - name: Audit release bundle and store metadata
+        run: npm run release:audit
+
       - name: Generate Capacitor Android project
         run: |
           npx cap add android
