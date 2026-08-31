@@ -17,7 +17,6 @@ else{
   const assets=new Map();
   const people=[];
   const nextFrame=()=>new Promise(r=>requestAnimationFrame(r));
-  const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
 
   function load(id){
     if(assets.has(id))return assets.get(id);
@@ -68,12 +67,11 @@ else{
       const host=new pc.Entity(`${def.name}_Host`);root.addChild(host);const model=asset.resource.instantiateRenderEntity({castShadows:false});host.addChild(model);model.setLocalPosition(0,0,0);model.setLocalScale(1,1,1);
       if(!await normalize(model,2.45+(index%4)*.06)){root.destroy();return;}
       animation(host,asset);
-      const p={...def,root,host,index:1,wait:index*.23,moving:false,yaw:index*27,lastPos:root.getPosition().clone(),talkCooldown:0};people.push(p);
+      const p={...def,waitRange:[...def.wait],root,host,index:1,waitCountdown:index*.23,moving:false,yaw:index*27};people.push(p);
     }catch(e){console.warn(`Crowd member ${def.name} skipped`,e);}
   }
   Promise.allSettled([load('xbot'),load('michelle'),load('soldier')]).then(()=>routines.forEach((d,i)=>create(d,i)));
 
-  // Small static conversation groups create social rhythm rather than all people marching.
   const groupSpots=[[-17,24],[-10,-22],[11,-20],[20,20]];
   for(let i=0;i<groupSpots.length;i++){
     const [x,z]=groupSpots[i];const marker=new pc.Entity(`ConversationSpot_${i}`);marker.setPosition(x,0,z);app.root.addChild(marker);
@@ -92,9 +90,9 @@ else{
     const h=hour();const inside=Boolean(window.StreetHustleLivingWorld?.currentInterior);
     for(const p of people){
       p.root.enabled=!inside&&activeForTime(p.name,h);if(!p.root.enabled)continue;
-      if(p.wait>0){p.wait-=dt;setMoving(p,false);continue;}
+      if(p.waitCountdown>0){p.waitCountdown-=dt;setMoving(p,false);continue;}
       const target=p.route[p.index];const pos=p.root.getPosition();const dx=target[0]-pos.x,dz=target[1]-pos.z,d=Math.hypot(dx,dz);
-      if(d<.28){p.index=(p.index+1)%p.route.length;p.wait=p.wait[0]+Math.random()*(p.wait[1]-p.wait[0]);setMoving(p,false);continue;}
+      if(d<.28){p.index=(p.index+1)%p.route.length;const [minWait,maxWait]=p.waitRange;p.waitCountdown=minWait+Math.random()*(maxWait-minWait);setMoving(p,false);continue;}
       const desired=Math.atan2(dx,-dz)*180/Math.PI;p.yaw=lerpAngle(p.yaw,desired,dt*5.2);p.root.setEulerAngles(0,p.yaw,0);
       const step=Math.min(d,p.speed*dt);p.root.setPosition(pos.x+dx/d*step,0,pos.z+dz/d*step);setMoving(p,true);
     }
