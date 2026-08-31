@@ -12,6 +12,12 @@ on:
         required: true
         default: '11'
   push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'capacitor.config.json'
+      - 'scripts/**'
+      - '.github/workflows/android-playstore.yml'
     tags:
       - 'android-v*'
 
