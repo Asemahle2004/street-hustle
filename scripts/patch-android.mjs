@@ -154,8 +154,7 @@ async function refreshSplashImages() {
       const meta = await sharp(target).metadata();
       const width = meta.width || 1200;
       const height = meta.height || 1200;
-      await sharp(source).resize(width, height, { fit: 'cover' }).png().toFile(`${target}.tmp`);
-      const bytes = await readFile(`${target}.tmp`);
+      const bytes = await sharp(source).resize(width, height, { fit: 'cover' }).png().toBuffer();
       await writeFile(target, bytes);
     } catch (error) {
       console.warn(`Splash replacement skipped for ${target}`, error.message);
