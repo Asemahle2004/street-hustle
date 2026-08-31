@@ -6,7 +6,7 @@ const world = window.StreetHustleWorld;
 if (world?.app) {
   const buildBadge = document.createElement('div');
   buildBadge.id = 'build-badge';
-  buildBadge.textContent = 'ALPHA 0.8 · SYSTEMS BUILD';
+  buildBadge.textContent = 'ALPHA 0.9 · FULL SCOPE BUILD';
   document.body.appendChild(buildBadge);
 
   const errorBanner = document.createElement('div');
@@ -26,7 +26,8 @@ if (world?.app) {
       visible('world-event-panel') ||
       visible('pause-menu') ||
       visible('tutorial-screen') ||
-      visible('completion-screen')
+      visible('completion-screen') ||
+      visible('life-panel')
     );
     window.StreetHustleUIBlocking = anyModal;
   });
