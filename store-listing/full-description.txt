@@ -1,0 +1,29 @@
+STREET HUSTLE is a fictional South African 3D life-simulation adventure about starting with almost nothing and deciding what kind of life you will build.
+
+Start from R0. Help at home, find work, build skills, meet people, use local transport, save money, start businesses and improve your living situation. Your choices affect more than cash: reputation, family, health, relationships, skills and consequences all shape your story.
+
+Build your path through legitimate jobs, entrepreneurship, technology, energy, sport, media and community opportunities. Risky fictional choices can bring faster money, but also Heat, police attention, arrest, prison, damaged relationships and financial collapse.
+
+Street Hustle is built around one idea:
+ZERO → HERO → ZERO → HERO.
+
+Success is not permanent. You can rise, lose what you built and try to rebuild with new knowledge and stronger choices.
+
+FEATURES
+• Third-person 3D neighbourhood and town areas
+• Animated characters and pedestrians
+• Walking, running, driving and taxi travel
+• Day/night cycle and changing weather
+• Jobs, careers, skills and qualifications
+• Cash, banking, inventory and shops
+• Business ownership and home progression
+• Relationships, family and community systems
+• Health, traffic and hospital consequences
+• Wanted levels, police, arrest and playable prison phase
+• Missions, achievements and random neighbourhood events
+• Multiple character/story framework
+• Local save system with no account required
+
+Street Hustle is fictional. Its characters, businesses, city, police events and storylines are created for gameplay and are not claims about real people or organisations.
+
+This release is an evolving alpha. More original characters, vehicles, environments, missions, audio and visual polish will be added as development continues.
