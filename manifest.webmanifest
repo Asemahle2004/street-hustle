@@ -1,0 +1,20 @@
+{
+  "name": "Street Hustle",
+  "short_name": "Street Hustle",
+  "description": "A fictional South African 3D life-simulation adventure about building a life, facing consequences and rebuilding.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#111418",
+  "theme_color": "#172a39",
+  "categories": ["games", "simulation", "adventure"],
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
