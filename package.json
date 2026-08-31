@@ -1,12 +1,13 @@
 {
   "name": "street-hustle",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "type": "module",
   "description": "Street Hustle 3D life-simulation game and Android packaging pipeline",
   "scripts": {
     "mobile:prepare": "node scripts/prepare-mobile.mjs",
     "store:assets": "node scripts/generate-store-assets.mjs",
+    "release:audit": "node scripts/release-audit.mjs",
     "android:patch": "node scripts/patch-android.mjs"
   },
   "dependencies": {
