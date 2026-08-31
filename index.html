@@ -32,6 +32,11 @@
     <div id="objective">OBJECTIVE: Talk to Ma at home</div>
   </header>
 
+  <aside id="world-tools" aria-label="World tools">
+    <button id="sound-toggle" type="button">SOUND ON</button>
+    <canvas id="minimap" width="180" height="180" aria-label="Street Hustle minimap"></canvas>
+  </aside>
+
   <div id="save-status" aria-live="polite">AUTOSAVED</div>
   <div id="toast" aria-live="polite"></div>
   <div id="interaction" role="status" aria-live="polite"></div>
@@ -63,7 +68,7 @@
     </div>
   </section>
 
-  <div id="desktop-help">WASD / Arrows move · Shift run · Drag look · Wheel zoom · E interact · P phone · Esc exit car</div>
+  <div id="desktop-help">WASD / Arrows move · Shift run · Drag look · Wheel zoom · E interact · P phone · M sound · Esc exit car</div>
 
   <div id="touch-controls" aria-label="Mobile controls">
     <div class="dpad">
@@ -85,5 +90,6 @@
   <script type="module" src="src/character-normalizer.js"></script>
   <script type="module" src="src/neighborhood-details.js"></script>
   <script type="module" src="src/day1-story.js"></script>
+  <script type="module" src="src/living-world.js"></script>
 </body>
 </html>
