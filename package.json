@@ -1,0 +1,21 @@
+{
+  "name": "street-hustle",
+  "version": "0.10.0",
+  "private": true,
+  "type": "module",
+  "description": "Street Hustle 3D life-simulation game and Android packaging pipeline",
+  "scripts": {
+    "mobile:prepare": "node scripts/prepare-mobile.mjs",
+    "store:assets": "node scripts/generate-store-assets.mjs",
+    "android:patch": "node scripts/patch-android.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "playcanvas": "2.21.4"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "sharp": "^0.34.3"
+  }
+}
