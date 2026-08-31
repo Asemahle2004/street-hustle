@@ -27,7 +27,8 @@ if (world?.app) {
       visible('pause-menu') ||
       visible('tutorial-screen') ||
       visible('completion-screen') ||
-      visible('life-panel')
+      visible('life-panel') ||
+      visible('city-feed')
     );
     window.StreetHustleUIBlocking = anyModal;
   });
